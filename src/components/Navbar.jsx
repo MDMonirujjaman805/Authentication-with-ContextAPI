@@ -1,4 +1,6 @@
+import { useContext } from "react";
 import { NavLink } from "react-router";
+import { AuthContext } from "../providers/AuthProvider";
 
 const Navbar = () => {
   const links = (
@@ -14,6 +16,12 @@ const Navbar = () => {
       </NavLink>
     </>
   );
+
+  // const authInfo = useContext(AuthContext);
+  // console.log(authInfo);
+
+  const { name } = useContext(AuthContext);
+  console.log(name);
 
   return (
     <div className="navbar bg-base-100 shadow-sm">
@@ -40,18 +48,18 @@ const Navbar = () => {
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
-          {links}
+            {links}
           </ul>
         </div>
-        <NavLink to="/" className="btn btn-ghost text-xl">Auth</NavLink>
+        <NavLink to="/" className="btn btn-ghost text-xl">
+          Auth
+        </NavLink>
       </div>
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
-     {links}
-        </ul>
+        <ul className="menu menu-horizontal px-1">{links}</ul>
       </div>
       <div className="navbar-end">
-        <a className="btn">Button</a>
+        <a className="btn">{name}</a>
       </div>
     </div>
   );
