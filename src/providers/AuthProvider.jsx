@@ -1,39 +1,59 @@
-/* eslint-disable react-refresh/only-export-components */
-import { createContext } from "react";
+import { createContext, useEffect, useState } from "react";
 import { auth } from "../firebase/firebase.init";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
 } from "firebase/auth";
-// import { useState } from "react";
-// import { onAuthStateChanged } from "firebase/auth";
 
+const provider = new GoogleAuthProvider();
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null);
+
 const AuthProvider = ({ children }) => {
-  // const [user,setUser]=useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const createUser = (email, password, name, phone) => {
+    setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password, name, phone);
   };
 
   const signInUser = (email, password) => {
+    setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
-  //   onAuthStateChanged(auth,currentUser => {
-  //     if(currentUser){
-  //         console.log("User Currently Loged In.",currentUser);
-  //         setUser(currentUser)
-  //     }
-  //     else{
-  //         console.log("User Currently Not Loged In.");
-  //         setUser(null);
-  //     }
-  //   })
+
+  const signInWithGoogle = () => {
+    return signInWithPopup(auth, provider);
+  };
+
+  const signOutUser = () => {
+    setLoading(true);
+    return signOut(auth);
+  };
+
+  useEffect(() => {
+    const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log("current User:", currentUser);
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => {
+      unSubscribe();
+    };
+  }, []);
+
   const authInfo = {
-    name: "Monir",
-    // user,
+    user,
+    loading,
     createUser,
     signInUser,
+    signOutUser,
+    signInWithGoogle,
   };
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
